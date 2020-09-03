@@ -3,6 +3,8 @@
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
+#include <getopt.h>
+#include <ctype.h>
 
 #define MAGIC 1410065410U
 
@@ -34,19 +36,54 @@ spinner( void )
     i = ( i==3? 0 : i+1 );
 }
 
+static void
+usage( const char *prg )
+{
+    fprintf(stderr, "Usage: %s [ -h ] [ n ]\n\n", prg );
+    fputs( "If no parameters are passed, generates a 10-digit random PIN.\n"
+           "If a number is provided, it generates that many 10-digit random\n"
+           "pins, and reports the max and min values for testing purposes.\n\n"
+           "If the -h parameter is passed, or any other parameter, this help\n"
+           "is displayed.\n\n", stderr);
+
+    fprintf( stderr,
+            "Example 1:\n\n$ %s 5\nAfter 5 iterations, min=3034540120, max=7743265784\n\n"
+            "Example 2:\n\n$ %s\n4673447243\n\n", prg, prg );
+}
+
+
+
 int main(int argc, char *argv[])
 {
-    if (argc == 2 ) {
+    opterr=0;
+    int c;
+    while ((c=getopt(argc, argv, "h")) != -1) {
+        switch (c){
+            case 'h':
+                usage(argv[0]);
+                return 1;
+
+            case '?':
+            default:
+                if (isprint(optopt))
+                    fprintf( stderr, "Error: Unknown option '-%c'\n", optopt );
+                else
+                    fprintf( stderr, "Error: Unknown option '\\x%x'\n", optopt );
+                return 1;
+        }
+    }
+
+    if (optind < argc) {
         char *ep=0;
-        ulong_t qty = strtoul( argv[1], &ep, 10 );
+        ulong_t qty = strtoul( argv[optind], &ep, 10 );
 
         if ( !qty || errno || *ep ) {
             if ( ep && *ep )
-                fprintf( stderr, "Invalid argument:  %s (I don't understand the part starting with \"%s...\")\n", argv[1], ep );
+                fprintf( stderr, "Invalid argument:  %s (I don't understand the part starting with \"%s...\")\n", argv[optind], ep );
             if ( !qty )
-                fprintf( stderr, "Invalid argument:  %s (Must be non-zero)\n", argv[1] );
+                fprintf( stderr, "Invalid argument:  %s (Must be non-zero)\n", argv[optind] );
             if ( errno )
-                fprintf( stderr, "Invalid argument: %s [%s]\n", argv[1], strerror(errno));
+                fprintf( stderr, "Invalid argument: %s [%s]\n", argv[optind], strerror(errno));
 
             return 1;
         }
