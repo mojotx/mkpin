@@ -1,0 +1,4 @@
+zoom-pin
+*.dSYM
+*.o
+core
