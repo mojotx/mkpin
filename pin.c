@@ -5,22 +5,31 @@
 #include <string.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <assert.h>
 
-#define MAGIC 1410065410U
+/*
+ * This program generates a pseudorandom 10-digit number, from the
+ * range of 0000000001 - 9999999999. Therefore, the maximum value must
+ * be less than 10e11.
+ *
+ * The value of UINT32_MAX (4294967295) is less than our 10-digit max
+ * of 9999999999, and 9999999999 % UINT32_MAX is 1410065409UL.
+ */
 
 typedef unsigned long ulong_t;
+
+#define MAXD (9999999999UL)
 
 static ulong_t
 get_val( void )
 {
-    // Generate a random 10-digit number.
-    ulong_t    a, b, c;
+    ulong_t val=0;
 
-    a = arc4random_uniform(UINT32_MAX)+1;
-    b = arc4random_uniform(UINT32_MAX)+1;
-    c = arc4random_uniform(MAGIC)+1;
-
-    return a + b + c;
+    for ( ulong_t i=0; i<(MAXD / UINT32_MAX); i++)
+        val += arc4random_uniform(UINT32_MAX)+1;
+    val += arc4random_uniform(MAXD % UINT32_MAX)+1;
+    assert( val <= MAXD );
+    return val;
 }
 
 static void
