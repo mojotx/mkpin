@@ -32,6 +32,8 @@ mkpin: $(OBJS)
 
 clean:
 	@rm -rvf $(BINNAME) $(OBJS)
+	@test -d cmake-build-debug && rm -rvf cmake-build-debug || true
+	@test -d cmake-build-release && rm -rvf cmake-build-release || true
 
 install: $(BINNAME)
 	@printf "\033[33mInstalling $(BINNAME) to $(HOME)/bin, press CTRL-C to cancel... "
