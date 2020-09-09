@@ -1,4 +1,5 @@
-CFLAGS=-std=c17 -O2 -Wall -Wextra -fstack-protector -fstack-protector-all -pipe
+CFLAGS=-O2 -DNDEBUG -std=c17 -Wall -Wextra -fstack-protector -fstack-protector-all -pipe
+#CFLAGS=-g -std=c17 -Wall -Wextra -fstack-protector -fstack-protector-all -pipe
 RM=rm -vfr
 YELLOW='\033[33m'
 NORMAL='\033[0m'
