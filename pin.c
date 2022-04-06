@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
                     fprintf( stderr, "Error: Unknown option '-%c'\n", optopt );
                 else
                     fprintf( stderr, "Error: Unknown option '\\x%x'\n", optopt );
-                return 1;
+                return EXIT_FAILURE;
         }
     }
 
@@ -87,14 +87,16 @@ int main(int argc, char *argv[])
         ulong_t qty = strtoul( argv[optind], &ep, 10 );
 
         if ( !qty || errno || *ep ) {
-            if ( ep && *ep )
-                fprintf( stderr, "Invalid argument:  %s (I don't understand the part starting with \"%s...\")\n", argv[optind], ep );
-            if ( !qty )
-                fprintf( stderr, "Invalid argument:  %s (Must be non-zero)\n", argv[optind] );
             if ( errno )
-                fprintf( stderr, "Invalid argument: %s [%s]\n", argv[optind], strerror(errno));
+                fprintf( stderr, "%s [%s]\n", argv[optind], strerror(errno));
+            else if ( ep && *ep )
+                fprintf( stderr, "•  %s (I don't understand the part starting with \"%s...\")\n", argv[optind], ep );
+            else if ( !qty )
+                fprintf( stderr, "•  %s (Must be non-zero)\n", argv[optind] );
+            else
+                fputs("Unknown error: Please open an issue at\n\nhttps://github.com/mojotx/mkpin/issues", stderr);
 
-            return 1;
+            return EXIT_FAILURE;
         }
 
         ulong_t min=ULONG_MAX;
@@ -120,5 +122,5 @@ int main(int argc, char *argv[])
         printf( "%lu\n", get_val() );
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
