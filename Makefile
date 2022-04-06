@@ -20,7 +20,8 @@ endif
 
 ifeq ($(OS), Darwin)
 	MACOS_VER=$(shell sw_vers | awk '/^ProductVersion/{print $$2}' )
-	CFLAGS+=-arch x86_64 -mmacosx-version-min=$(MACOS_VER)
+	MACOS_ARCH=$(shell uname -m)
+	CFLAGS+=-arch $(MACOS_ARCH) -mmacosx-version-min=$(MACOS_VER)
 	SHA256=shasum -a 256
 endif
 
